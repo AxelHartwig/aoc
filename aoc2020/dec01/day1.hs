@@ -24,3 +24,10 @@ solve2 [] = 0
 solve2 (x:xs)
     | ((x !! 0) + (x !! 1) + (x !! 2)) == 2020 = (x !! 0) * (x !! 1) * (x !! 2)   
     | otherwise = solve2 xs
+
+
+solve3 :: [Int] -> Int
+solve3 input = head [x*y | x <- input, y <- input, x+y == 2020]
+
+solve4 :: [Int] -> Int
+solve4 input = head [x*y*z | x <- input, y <- input, z<-input, x+y+z == 2020]
