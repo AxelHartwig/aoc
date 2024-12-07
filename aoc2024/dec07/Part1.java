@@ -38,7 +38,7 @@ class Part1 {
     }
 
     static boolean isValid2(long testval, long[] equation, int i, long res) {
-        if (i >= equation.length - 1) {
+        if (i >= equation.length - 1 || res > testval) {
             return res == testval;
         } else {
             return isValid2(testval, equation, i + 1, res * equation[i + 1])
