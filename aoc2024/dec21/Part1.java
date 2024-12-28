@@ -13,18 +13,21 @@ class Part1 {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         long part1 = 0;
+        long part2 = 0;
         char[] numpad = { '7', '8', '9', '4', '5', '6', '1', '2', '3', 'X', '0', 'A' };
         while (scan.hasNextLine()) {
             String in = scan.nextLine();
             int r1 = 3;
             int c1 = 2;
             long res = 0;
+            long res2 = 0;
             for (int i = 0; i < in.length(); i++) {
                 for (int r2 = 0; r2 < 4; r2++) {
                     for (int c2 = 0; c2 < 3; c2++) {
                         if (numpad[r2 * 3 + c2] == in.charAt(i)) {
 
-                            res += solve(r1, c1, r2, c2);
+                            res += solve(r1, c1, r2, c2, false);
+                            res2 += solve(r1, c1, r2, c2, true);
                             r1 = r2;
                             c1 = c2;
 
@@ -32,62 +35,72 @@ class Part1 {
                     }
                 }
             }
-
             int n = Integer.parseInt(in.replace("A", ""));
+
             part1 += n * res;
+            part2 += n * res2;
         }
         System.out.println(part1);
-        System.out.println(Long.MAX_VALUE);
+        System.out.println(part2);
+
     }
 
-    static long solve(int r1, int c1, int r2, int c2) {
+    static long solve(int r1, int c1, int r2, int c2, boolean b) {
 
         long res = Long.MAX_VALUE;
         Queue<Coordinate> q = new LinkedList<>();
         Set<Coordinate> visited = new HashSet<>();
-        q.add(new Coordinate(r1, c1, ""));
+        q.add(new Coordinate(c1, r1, ""));
 
         while (!q.isEmpty()) {
             Coordinate curr = q.poll();
 
             if (curr.y == r2 && curr.x == c2) {
+                long ans;
+                if (b) {
+                    ans = minRobot(curr.press + "A", 26);
+                } else {
+                    ans = minRobot(curr.press + "A", 3);
 
-                long ans = minRobot(curr.press + "A", 3);
+                }
                 res = Math.min(ans, res);
                 continue;
             }
 
             if (curr.y == 3 && curr.x == 0) {
                 continue;
+            } else {
+                if (curr.y < r2) {
+                    Coordinate temp = new Coordinate(curr.x, curr.y + 1, curr.press + "v");
+                    if (!visited.contains(temp)) {
+                        q.add(temp);
+                        visited.add(temp);
+                    }
+                } else if (curr.y > r2) {
+                    Coordinate temp = new Coordinate(curr.x, curr.y - 1, curr.press + "^");
+                    if (!visited.contains(temp)) {
+                        q.add(temp);
+                        visited.add(temp);
+                    }
+                }
+
+                if (curr.x < c2) {
+                    Coordinate temp = new Coordinate(curr.x + 1, curr.y, curr.press + ">");
+                    if (!visited.contains(temp)) {
+                        visited.add(temp);
+                        q.add(temp);
+                    }
+
+                } else if (curr.x > c2) {
+                    Coordinate temp = new Coordinate(curr.x - 1, curr.y, curr.press + "<");
+                    if (!visited.contains(temp)) {
+                        q.add(temp);
+                        visited.add(temp);
+                    }
+
+                }
             }
 
-            if (curr.y < r2) {
-                Coordinate temp = new Coordinate(curr.y + 1, curr.x, curr.press + "v");
-                if (!visited.contains(temp)) {
-                    q.add(temp);
-                    visited.add(temp);
-                }
-            } else if (curr.y > r2) {
-                Coordinate temp = new Coordinate(curr.y - 1, curr.x, curr.press + "^");
-                if (!visited.contains(temp)) {
-                    q.add(temp);
-                    visited.add(temp);
-                }
-            } else if (curr.x < c2) {
-                Coordinate temp = new Coordinate(curr.y, curr.x + 1, curr.press + ">");
-                if (!visited.contains(temp)) {
-                    visited.add(temp);
-                    q.add(temp);
-                }
-
-            } else if (curr.x > c2) {
-                Coordinate temp = new Coordinate(curr.y, curr.x - 1, curr.press + "<");
-                if (!visited.contains(temp)) {
-                    q.add(temp);
-                    visited.add(temp);
-                }
-
-            }
         }
         return res;
 
@@ -108,7 +121,7 @@ class Part1 {
         Queue<Coordinate> q = new LinkedList<>();
         Set<Coordinate> visited = new HashSet<>();
 
-        q.add(new Coordinate(r1, c1, ""));
+        q.add(new Coordinate(c1, r1, ""));
         while (!q.isEmpty()) {
             Coordinate curr = q.poll();
             if (curr.y == r2 && curr.x == c2) {
@@ -119,35 +132,38 @@ class Part1 {
 
             if (curr.y == 0 && curr.x == 0) {
                 continue;
+            } else {
+                if (curr.y < r2) {
+                    Coordinate temp = new Coordinate(curr.x, curr.y + 1, curr.press + "v");
+                    if (!visited.contains(temp)) {
+                        q.add(temp);
+                        visited.add(temp);
+                    }
+                } else if (curr.y > r2) {
+                    Coordinate temp = new Coordinate(curr.x, curr.y - 1, curr.press + "^");
+                    if (!visited.contains(temp)) {
+                        q.add(temp);
+                        visited.add(temp);
+                    }
+                }
+
+                if (curr.x < c2) {
+                    Coordinate temp = new Coordinate(curr.x + 1, curr.y, curr.press + ">");
+                    if (!visited.contains(temp)) {
+                        visited.add(temp);
+                        q.add(temp);
+                    }
+
+                } else if (curr.x > c2) {
+                    Coordinate temp = new Coordinate(curr.x - 1, curr.y, curr.press + "<");
+                    if (!visited.contains(temp)) {
+                        q.add(temp);
+                        visited.add(temp);
+                    }
+
+                }
             }
 
-            if (curr.y < r2) {
-                Coordinate temp = new Coordinate(curr.y + 1, curr.x, curr.press + "v");
-                if (!visited.contains(temp)) {
-                    q.add(temp);
-                    visited.add(temp);
-                }
-            } else if (curr.y > r2) {
-                Coordinate temp = new Coordinate(curr.y - 1, curr.x, curr.press + "^");
-                if (!visited.contains(temp)) {
-                    q.add(temp);
-                    visited.add(temp);
-                }
-            } else if (curr.x < c2) {
-                Coordinate temp = new Coordinate(curr.y, curr.x + 1, curr.press + ">");
-                if (!visited.contains(temp)) {
-                    visited.add(temp);
-                    q.add(temp);
-                }
-
-            } else if (curr.x > c2) {
-                Coordinate temp = new Coordinate(curr.y, curr.x - 1, curr.press + "<");
-                if (!visited.contains(temp)) {
-                    q.add(temp);
-                    visited.add(temp);
-                }
-
-            }
         }
         cache.put(tempList, res);
         return res;
@@ -156,7 +172,6 @@ class Part1 {
 
     static long minRobot(String press, int iters) {
         if (iters == 1) {
-            System.out.println(press);
             return press.length();
         }
 
@@ -197,12 +212,12 @@ class Coordinate {
         if (!(obj instanceof Coordinate other)) {
             return false;
         }
-        return other.x == this.x && other.y == this.y;
+        return other.x == this.x && other.y == this.y && this.press == other.press;
     }
 
     @Override
     public int hashCode() {
-        return 31 * x + 31 * y;
+        return 31 * x + 31 * y + press.hashCode();
     }
 
 }
